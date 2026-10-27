@@ -22,10 +22,13 @@ def fit(vec, A):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--bootstrap", type=int, default=50)
+    parser.add_argument("--counts", default="data/processed/tumor_context_counts.csv")
     parser.add_argument("--output", default="data/processed/tumor_signature_activities_refit.csv")
+
     args = parser.parse_args()
 
-    counts = pd.read_csv(COUNTS)
+    counts = pd.read_csv(args.counts)
+
     mat = pd.read_csv(MATRIX, sep="\t").set_index("Type")
     mat = mat[SIGS]
     contexts = list(mat.index)
