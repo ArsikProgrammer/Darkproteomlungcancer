@@ -76,7 +76,9 @@ def main():
     print(f"Mean beta_hat: {betas.mean():.4f} (true {beta_true:.4f})")
     print(f"Mean OR_hat: {np.exp(betas.mean()):.4f}")
     print(f"Coverage: {cover/len(betas):.3f}")
-    print(f"Power (p<0.05): {sig_count/len(betas):.3f}")
+    if args.sims < 200:
+        print("WARNING: fewer than 200 sims; power/coverage estimates are unstable")
+
     print(f"Mean SE (approx): {betas.std():.4f}")
 
 if __name__ == "__main__":

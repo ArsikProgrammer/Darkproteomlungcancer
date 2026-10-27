@@ -23,11 +23,14 @@ def main():
     mut["Protein_position"] = pd.to_numeric(mut["Protein_position"], errors="coerce")
 
     out = mut.merge(dark, on=["Hugo_Symbol", "Protein_position"], how="left", validate="many_to_one")
-    out["is_dark"] = out["is_dark"].fillna(0).astype(int)
+    out["is_dark"] = out["is_dark"]  # keep unknown as NaN; do not treat missing pLDDT as ordered
+    out["has_plddt"] = out["is_dark"].notna()
 
     Path(args.output).parent.mkdir(parents=True, exist_ok=True)
     out.to_csv(args.output, index=False)
-    print("Rows:", len(out), "dark:", int(out.is_dark.sum()))
+    print("Rows:", len(out), "with pLDDT:", int(out["has_plddt"].sum()),
+          "missing:", int((~out["has_plddt"]).sum()))
+
     print("Saved:", args.output)
 
 

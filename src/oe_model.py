@@ -20,6 +20,9 @@ def main():
     sig = pd.read_csv(args.signatures, low_memory=False)
 
     bg_map = dict(zip(bg["context_96"], bg["dark_fraction"]))
+    if bg["dark_fraction"].isna().any() or ((bg["dark_fraction"] <= 0) | (bg["dark_fraction"] >= 1)).any():
+        raise ValueError("background dark_fraction must be in (0,1) for all contexts")
+
     mut["p_dark_bg"] = mut["context_96"].map(bg_map).fillna(bg["dark_fraction"].mean())
     mut["offset"] = np.log(mut["p_dark_bg"] / (1 - mut["p_dark_bg"]))
 

@@ -53,7 +53,9 @@ def main():
     print(f"Power (p<0.05): {power:.3f}")
     print(f"Base dark fraction: {base:.3f}")
     print(f"Mean simulated frac variance: {np.mean(var_fracs):.4f}")
-    print(f"Observed frac variance: {df['dark_fraction'].var():.4f}")
+    if power >= 0.999:
+        print("WARNING: power is suspiciously 1.000; check simulation design and coverage")
+
 
 if __name__ == "__main__":
     main()

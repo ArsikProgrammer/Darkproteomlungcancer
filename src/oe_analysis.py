@@ -21,6 +21,9 @@ def main():
         raise ValueError("Mutations must contain context_96 and is_dark")
 
     bg_map = dict(zip(bg["context_96"], bg["dark_fraction"]))
+    if bg["dark_fraction"].isna().any() or ((bg["dark_fraction"] <= 0) | (bg["dark_fraction"] >= 1)).any():
+        raise ValueError("background dark_fraction must be in (0,1) for all contexts")
+
 
     # per-mutation expected probability of being dark
     mut["p_dark_bg"] = mut["context_96"].map(bg_map).fillna(bg["dark_fraction"].mean())

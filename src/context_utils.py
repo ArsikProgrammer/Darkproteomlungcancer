@@ -31,8 +31,11 @@ def context_for_position(seq: str, pos: int, ref: str, alt: str):
 
 def normalize_chrom(chrom: str) -> str:
     chrom = str(chrom).strip()
+    if chrom.lower().startswith("chr"):
+        chrom = chrom[3:]
     if chrom == "23":
         return "X"
     if chrom == "24":
         return "Y"
     return chrom
+

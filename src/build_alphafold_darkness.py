@@ -65,6 +65,9 @@ def main():
     parser.add_argument("--tar", default="data/raw/UP000005640_9606_HUMAN_v6.tar")
     parser.add_argument("--output", required=True)
     parser.add_argument("--threshold", type=float, default=70.0)
+    parser.add_argument("--min_coverage", type=float, default=0.9)
+
+
     args = parser.parse_args()
 
     genes = set()
@@ -81,6 +84,7 @@ def main():
 
     acc_plddt = {}
     tar_path = Path(args.tar)
+    truncated = False
     with tar_path.open("rb") as f:
         tf = tarfile.open(fileobj=f, mode="r:")
         processed = 0
@@ -106,9 +110,17 @@ def main():
                     if processed % 100 == 0:
                         print("Parsed proteins:", processed)
         except Exception as e:
+            truncated = True
             print("Tar stream ended:", type(e).__name__, str(e)[:200])
 
     print("Total parsed proteins:", len(acc_plddt))
+    if truncated:
+        raise RuntimeError("AlphaFold tar archive is truncated; coverage is incomplete")
+    coverage = len(acc_plddt) / len(needed_acc) if needed_acc else 1.0
+    print("Protein coverage:", round(coverage, 4))
+    if coverage < args.min_coverage:
+        raise RuntimeError(f"AlphaFold coverage {coverage:.3f} below required {args.min_coverage}")
+
 
     rows = []
     for m in args.mutations:
